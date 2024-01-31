@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Efficiency</title>
+
+		<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+		<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels"></script>
+
+		<style>
+			html,
+			body {
+				height: 100%;
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				display: flex;
+				justify-content: center;
+				align-items: center;
+			}
+
+			#myChart {
+				max-width: 100%;
+				max-height: 100%;
+				width: 600px; /* Set a maximum width for the chart */
+				height: auto; /* Allow the chart to adjust its height proportionally */
+			}
+		</style>
+	</head>
+	<body>
+		<div style="width: 80%; height: 80%">
+			<canvas id="myChart"></canvas>
+		</div>
+
+		<script>
+			function generateRandomData() {
+				var data = [];
+				for (var i = 0; i < 14; i++) {
+					if (i < 7) {
+						data.push(50 + Math.random() * 14);
+					} else {
+						data.push(65 + Math.random() * 35);
+					}
+				}
+				return data;
+			}
+
+			function generateDateLabels() {
+				var labels = [];
+				var currentDate = new Date();
+				for (var i = 0; i < 14; i++) {
+					var date = new Date(currentDate.getTime() + i * 24 * 60 * 60 * 1000);
+					var formattedDate =
+						date.getDate() +
+						" " +
+						monthNames[date.getMonth()].substr(0, 3) +
+						" " +
+						(date.getFullYear() % 100);
+					labels.push(formattedDate);
+				}
+				return labels;
+			}
+
+			var monthNames = [
+				"Jan",
+				"Feb",
+				"Mar",
+				"Apr",
+				"May",
+				"Jun",
+				"Jul",
+				"Aug",
+				"Sep",
+				"Oct",
+				"Nov",
+				"Dec",
+			];
+
+			var ctx = document.getElementById("myChart").getContext("2d");
+			var myChart = new Chart(ctx, {
+				type: "line",
+				plugins: [ChartDataLabels],
+				data: {
+					labels: generateDateLabels(),
+					datasets: [
+						{
+							label: "Target Efficiency",
+							data: Array(14).fill(65),
+							borderColor: "rgba(60,44,123,0.8)", // Set line color with transparency
+							tension: 0.1,
+							fill: true, // Enable fill for the dataset
+							backgroundColor: "rgba(60,44,123,0.2)", // Set background color with transparency
+							pointStyle: "circle",
+							pointRadius: 4,
+						},
+						{
+							label: "Actual Efficiency",
+							data: generateRandomData(),
+							borderColor: "rgba(0,145,64,0.8)", // Set line color with transparency
+							tension: 0.1,
+							fill: true, // Enable fill for the dataset
+							backgroundColor: "rgba(0,145,64,0.2)", // Set background color with transparency
+							pointStyle: "circle",
+							pointRadius: 4,
+						},
+					],
+				},
+				options: {
+					scales: {
+						y: {
+							beginAtZero: true,
+							suggestedMax: 100,
+							ticks: {
+								callback: function (value, index, values) {
+									return value + "%";
+								},
+							},
+						},
+					},
+					plugins: {
+						title: {
+							display: true,
+							text: "Line Efficiency Performance by Factory",
+							font: {
+								size: 18,
+							},
+						},
+						datalabels: {
+							color: "black",
+							anchor: "end",
+							align: "top",
+							font: { size: 12, weight: "bold", family: "Arial" },
+							offset: 4,
+							formatter: function (value, context) {
+								return value.toFixed(2) + "%"; // Append "%" to the displayed label
+							},
+						},
+					},
+					animations: {
+						radius: {
+							duration: 400,
+							easing: "linear",
+							loop: (context) => context.active,
+						},
+					},
+					hoverRadius: 5,
+					hoverBackgroundColor: "grey",
+					interaction: {
+						mode: "nearest",
+						intersect: false,
+						axis: "x",
+					},
+				},
+			});
+		</script>
+	</body>
+</html>
